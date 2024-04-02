@@ -113,7 +113,7 @@ namespace Connection_Patcher
             ofs.write(reinterpret_cast<char const*>(signature.data()), signature.size());
         }
     }
-
+    // usage: connection_patcher.exe --path Wow-64.exe
     po::variables_map GetConsoleArguments(int argc, char** argv)
     {
         po::options_description all("Allowed options");
@@ -163,6 +163,7 @@ int main(int argc, char** argv)
             return 0;
         }
 
+        // 获取要破解的exe文件的路径
         std::string const binary_path(std::move(vm["path"].as<std::string>()));
         std::string renamed_binary_path(binary_path);
         std::wstring appDataPath;

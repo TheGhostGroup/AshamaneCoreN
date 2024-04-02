@@ -16,35 +16,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CONNECTION_PATCHER_PATCHER_HPP
-#define CONNECTION_PATCHER_PATCHER_HPP
+#pragma once
+
+#ifndef CONNECTION_PATCHER_LAUNCHER_HPP
+#define CONNECTION_PATCHER_LAUNCHER_HPP
 
 #include "Helper.hpp"
-
-#include <fstream>
-#include <iostream>
-#include <iterator>
-
 namespace Connection_Patcher
 {
-    class Patcher
+    class Launcher
     {
     public:
-        Patcher(boost::filesystem::path file);
-
-        void Patch(std::vector<unsigned char> const& bytes, std::vector<unsigned char> const& pattern);
-        void Finish(boost::filesystem::path out);
-        Constants::BinaryTypes GetType() const { return _binaryType; }
-        std::vector<unsigned char> const& GetBinary() const { return _binary; }
-
-    private:
-        void ReadFile();
-        void WriteFile(boost::filesystem::path const& path);
-
-        boost::filesystem::path _filePath;
-        std::vector<unsigned char> _binary;      // exe文件的内存读取到这个变量中
-        Constants::BinaryTypes _binaryType;
+        Launcher();
+        bool LaunchGame(std::string const& exePath, std::string const& gameCmdLine);
     };
 }
 
-#endif
+
+
+#endif // CONNECTION_PATCHER_LAUNCHER_HPP

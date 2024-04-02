@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2012-2014 Arctium Emulation <http://arctium.org>
  * Copyright (C) 2008-2018 TrinityCore <https://www.trinitycore.org/>
  *
@@ -21,27 +21,29 @@
 namespace Connection_Patcher
 {
     Patcher::Patcher(boost::filesystem::path file)
-        : filePath(file)
+        : _filePath(file)
     {
         ReadFile();
-        binaryType = Helper::GetBinaryType(binary);
+        _binaryType = Helper::GetBinaryType(_binary);
     }
 
+    // read to _binary
     void Patcher::ReadFile()
     {
-        std::ifstream ifs(filePath.string(), std::ifstream::binary);
+        std::ifstream ifs(_filePath.string(), std::ifstream::binary);
         if (!ifs)
-            throw std::runtime_error("could not open " + filePath.string());
+            throw std::runtime_error("could not open " + _filePath.string());
 
-        binary.clear();
+        _binary.clear();
         ifs >> std::noskipws;
         ifs.seekg(0, std::ios_base::end);
-        binary.reserve(ifs.tellg());
+        _binary.reserve(ifs.tellg());
         ifs.seekg(0, std::ios_base::beg);
 
-        std::copy(std::istream_iterator<unsigned char>(ifs), std::istream_iterator<unsigned char>(), std::back_inserter(binary));
+        std::copy(std::istream_iterator<unsigned char>(ifs), std::istream_iterator<unsigned char>(), std::back_inserter(_binary));
     }
 
+    // 将破解后的数据重新写到磁盘文件中
     void Patcher::WriteFile(boost::filesystem::path const& path)
     {
         std::ofstream ofs(path.string(), std::ofstream::binary);
@@ -50,24 +52,25 @@ namespace Connection_Patcher
 
         ofs << std::noskipws;
 
-        std::copy(binary.begin(), binary.end(), std::ostream_iterator<unsigned char>(ofs));
+        std::copy(_binary.begin(), _binary.end(), std::ostream_iterator<unsigned char>(ofs));
     }
 
+    // 进行破解 ...
     void Patcher::Patch(std::vector<unsigned char> const& bytes, std::vector<unsigned char> const& pattern)
     {
-        if (binary.size() < pattern.size())
+        if (_binary.size() < pattern.size())
             throw std::logic_error("pattern larger than binary");
 
         if (pattern.empty())
             return;
 
-        for (size_t const offset : Helper::SearchOffset(binary, pattern))
+        for (size_t const offset : Helper::SearchOffset(_binary, pattern))
         {
             std::cout << "Found offset " << offset << std::endl;
 
-            if (offset != 0 && binary.size() >= bytes.size())
+            if (offset != 0 && _binary.size() >= bytes.size())
                 for (size_t i = 0; i < bytes.size(); i++)
-                    binary[offset + i] = bytes[i];
+                    _binary[offset + i] = bytes[i];
         }
     }
 
